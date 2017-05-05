@@ -1,14 +1,13 @@
 package com.boaglio.pequenoprincipebot;
 
-import java.io.File;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class FrasesCache {
 
@@ -50,14 +49,12 @@ public class FrasesCache {
 
 	private void init() {
 
-		ClassLoader classLoader = getClass().getClassLoader();
-		File arquivoDeFrases = new File(classLoader.getResource(ARQUIVO_DE_FRASES).getFile());
+		ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+		InputStream is = classloader.getResourceAsStream(ARQUIVO_DE_FRASES);
 
-		System.out.println("arquivoDeFrases = " + arquivoDeFrases);
+		try (BufferedReader stream = new BufferedReader(new InputStreamReader(is))) {
 
-		try (Stream<String> stream = Files.lines(Paths.get(arquivoDeFrases.getAbsolutePath()))) {
-
-			frases = stream.collect(Collectors.toList());
+			frases = stream.lines().collect(Collectors.toList());
 
 		} catch (IOException e) {
 			e.printStackTrace();
